@@ -1,0 +1,1 @@
+export const BASIC_LOGIN_ENDPOINT = "/auth/basic/login"
