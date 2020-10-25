@@ -1,29 +1,37 @@
 import React from 'react';
-import './App.css';
-import { useDispatch } from 'react-redux';
-import { basicLoginRequested } from './store/auth';
+import LoginPanel from './login/LoginPanel';
+import { makeStyles, ThemeProvider } from '@material-ui/core';
+import { theme } from './theme';
+import { Redirect, Route, Router, Switch } from 'react-router-dom';
+
+const useStyles = makeStyles({
+  root: {
+    height: "100%",
+  },
+})
 
 function App() {
-  const dispatch = useDispatch()
+  const classes = useStyles()
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          onClick={() => {
-            dispatch(basicLoginRequested({
-              username: "test",
-              password: "test"
-            }))
-          }}
-        >
-          Learn React
-        </a>
-      </header>
+    <div className={classes.root}>
+      <ThemeProvider theme={theme}>
+        <Switch>
+          <Route exact path="/">
+            <Redirect
+              to={{
+                pathname: "/home",
+              }}
+            />
+          </Route>
+          <Route path="/login">
+            <LoginPanel />
+          </Route>
+          <Route path="/home">
+            <p>Protected</p>
+          </Route>
+        </Switch>
+      </ThemeProvider>
     </div>
   );
 }
