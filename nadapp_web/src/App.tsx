@@ -1,8 +1,9 @@
 import React from 'react';
 import LoginPanel from './login/LoginPanel';
-import { makeStyles, ThemeProvider } from '@material-ui/core';
+import { CssBaseline, makeStyles, ThemeProvider } from '@material-ui/core';
 import { theme } from './theme';
 import { Redirect, Route, Router, Switch } from 'react-router-dom';
+import MainPanel from './main/MainPanel';
 
 const useStyles = makeStyles({
   root: {
@@ -16,19 +17,13 @@ function App() {
   return (
     <div className={classes.root}>
       <ThemeProvider theme={theme}>
+        <CssBaseline />
         <Switch>
-          <Route exact path="/">
-            <Redirect
-              to={{
-                pathname: "/home",
-              }}
-            />
-          </Route>
           <Route path="/login">
             <LoginPanel />
           </Route>
-          <Route path="/home">
-            <p>Protected</p>
+          <Route path="/">
+            <MainPanel />
           </Route>
         </Switch>
       </ThemeProvider>

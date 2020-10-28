@@ -70,7 +70,7 @@ export const basicLoginVerifyRequested = createAsyncThunk(
       if (response.data.result === "ok") {
         dispatch(fetchProfileInfo())
         dispatch(redirectTo({
-          path: "/home",
+          path: "/",
           replace: true,
         }))
 

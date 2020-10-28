@@ -39,7 +39,7 @@ export const fetchProfileInfo = createAsyncThunk(
     try {
       const response = await axios.get(PROFILE_INFO_ENDPOINT)
       return {
-        info: response.data
+        info: response.data.info
       } as FetchProfileInfoSuccess
     } catch (err) {
       console.log("fetchProfileInfo error:", err.response.data)
