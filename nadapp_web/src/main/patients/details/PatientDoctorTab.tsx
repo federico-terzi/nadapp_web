@@ -4,9 +4,9 @@ import { CloudUpload } from '@material-ui/icons';
 import axios from "axios";
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { generatePatientReportUploadEndpoint } from '../../serverConfig';
-import { fetchPatientDoctors, fetchPatientReports, DoctorEntry } from '../../store/patients';
-import { RootState } from '../../store/root';
+import { generatePatientReportUploadEndpoint } from '../../../serverConfig';
+import { fetchPatientDoctors, fetchPatientReports, DoctorEntry } from '../../../store/patients';
+import { RootState } from '../../../store/root';
 import DoctorItem from './DoctorItem';
 import ReportItem from './ReportItem';
 
@@ -27,7 +27,7 @@ function PatientDoctorTab({ patientId }: Props) {
 
   useEffect(() => {
     dispatch(fetchPatientDoctors(patientId))
-  }, [])
+  }, [patientId])
 
   const doctors = useSelector<RootState, DoctorEntry[]>(state => state.patients.currentPatientDoctors)
   const doctorItems = doctors.map(doctor => <DoctorItem doctor={doctor} />)

@@ -1,18 +1,24 @@
-import { AppBar, Box, Button, CssBaseline, Divider, Drawer, IconButton, InputBase, List, ListItem, ListItemIcon, ListItemText, Toolbar, Typography } from '@material-ui/core';
+import { AppBar, Box, Button, CssBaseline, Divider, Drawer, IconButton, InputBase, List, ListItem, ListItemIcon, ListItemText, TextField, Toolbar, Typography } from '@material-ui/core';
 import Paper from '@material-ui/core/Paper/Paper';
 import { makeStyles } from '@material-ui/core/styles';
 import { ExitToApp, Favorite, Home, Inbox, Mail, Search, SupervisorAccount } from '@material-ui/icons';
-import { Alert } from '@material-ui/lab';
+import { Alert, Autocomplete } from '@material-ui/lab';
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Route, useRouteMatch, Switch, Link, useHistory } from 'react-router-dom';
+import { SEARCH_ENDPOINT } from '../serverConfig';
 import { logoutRequest } from '../store/auth';
 import { DoctorInfo } from '../store/profile';
 import { RootState } from '../store/root';
 import HomePanel from './HomePanel';
-import PatientPanel from './patient/PatientPanel';
+import PatientPanel from './patients/details/PatientPanel';
 import PatientsPanel from './patients/PatientsPanel';
 import ProfilePanel from './ProfilePanel';
+import axios from "axios"
+import { ShortPatientInfo } from '../store/patients';
+import { ShortDoctorInfo } from '../store/doctors';
+import DoctorsPanel from './doctors/DoctorsPanel';
+import DoctorPanel from './doctors/details/DoctorPanel';
 
 const drawerWidth = 240;
 
@@ -63,16 +69,14 @@ const useStyles = makeStyles(theme => ({
   },
   inputRoot: {
     width: 500,
+    "& fieldset": {
+      borderStyle: "none"
+    },
   },
   inputInput: {
-    padding: theme.spacing(1, 1, 1, 0),
     // vertical padding + font size from searchIcon
     paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
-    transition: theme.transitions.create('width'),
     width: '100%',
-    [theme.breakpoints.up('md')]: {
-      width: '20ch',
-    },
   },
   toolbarIconBtn: {
     color: "white",
@@ -82,13 +86,74 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 
+type PatientSearchResult = {
+  type: "patient"
+  id: number
+  name: string
+}
+
+type DoctorSearchResult = {
+  type: "doctor"
+  id: number
+  name: string
+}
+
+type SearchResult = PatientSearchResult | DoctorSearchResult
+
 function MainPanel() {
   const classes = useStyles()
   const dispatch = useDispatch()
+  const history = useHistory()
+
   const profileInfo = useSelector<RootState, DoctorInfo | null>(state => state.profile.info)
   let doctorName = ""
   if (profileInfo) {
     doctorName = `${profileInfo.title ?? ""} ${profileInfo.firstName} ${profileInfo.lastName}`.trim()
+  }
+
+  const [searchResults, setSearchResults] = useState<SearchResult[]>([])
+  const fetchSearchResults = async (query: string) => {
+    try {
+      const response = await axios.get(SEARCH_ENDPOINT, { params: {q: query} })
+      let results: SearchResult[] = []
+      if (response.data.patients) {
+        const patientResults = response.data.patients.map((patient: ShortPatientInfo) => {
+          const name = `${patient.firstName} ${patient.lastName}`
+          return {
+            type: "patient",
+            id: patient.id,
+            name,
+          }
+        })
+        results = [...results, ...patientResults]
+      }
+      if (response.data.doctors) {
+        const doctorResults = response.data.doctors.map((doctor: ShortDoctorInfo) => {
+          const name = `${doctor.title ?? ""} ${doctor.firstName} ${doctor.lastName}`.trim()
+          return {
+            type: "doctor",
+            id: doctor.id,
+            name,
+          }
+        })
+        results = [...results, ...doctorResults]
+      }
+      setSearchResults(results)
+    } catch (err) {
+      console.log("search error:", err.response.data)
+      if (err.response.status === 401) {
+        dispatch(logoutRequest())
+      }
+      throw err
+    }
+  }
+  const searchResultSelected = (result: SearchResult) => {
+    if (result.type === "doctor") {
+      history.push("/doctors/" + result.id)
+    } else if (result.type === "patient") {
+      history.push("/patients/" + result.id)
+    }
+    setSearchResults([])
   }
 
   const { path, url } = useRouteMatch()
@@ -105,13 +170,30 @@ function MainPanel() {
             <div className={classes.searchIcon}>
               <Search />
             </div>
-            <InputBase
-              placeholder="Cerca..."
-              classes={{
-                root: classes.inputRoot,
-                input: classes.inputInput,
+            <Autocomplete
+              disableClearable
+              options={searchResults}
+              getOptionLabel={result => {
+                if (result.type === "doctor") {
+                  return `Medici > ${result.name}`
+                } else if (result.type === "patient") {
+                  return `Pazienti > ${result.name}`
+                } else {
+                  return ""
+                }
               }}
-              inputProps={{ 'aria-label': 'search' }}
+              className={classes.inputRoot}
+              onChange={(e, value) => searchResultSelected(value)}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  className={classes.inputInput}
+                  onChange={(e) => fetchSearchResults(e.target.value)}
+                  placeholder="Cerca..."
+                  variant="outlined"
+                  InputProps={{ ...params.InputProps, style: { padding: 0 }, type: 'search' }}
+                />
+              )}
             />
           </div>
           <Button className={classes.toolbarLink} component={Link} to="/profile">{doctorName}</Button>
@@ -138,7 +220,7 @@ function MainPanel() {
               <ListItemIcon><SupervisorAccount /></ListItemIcon>
               <ListItemText primary="Pazienti" />
             </ListItem>
-            <ListItem button>
+            <ListItem button component={Link} to="/doctors">
               <ListItemIcon><Favorite /></ListItemIcon>
               <ListItemText primary="Medici" />
             </ListItem>
@@ -158,6 +240,12 @@ function MainPanel() {
           </Route>
           <Route path={`${path}patients/:patientId`}>
             <PatientPanel />
+          </Route>
+          <Route exact path={`${path}doctors`}>
+            <DoctorsPanel />
+          </Route>
+          <Route path={`${path}doctors/:doctorId`}>
+            <DoctorPanel />
           </Route>
         </Switch>
       </main>

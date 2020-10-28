@@ -2,8 +2,8 @@ import { TableCell, TableRow } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { generatePatientReportDownloadEndpoint } from '../../serverConfig';
-import { ReportEntry, ShortPatientInfo } from '../../store/patients';
+import { generatePatientReportDownloadEndpoint } from '../../../serverConfig';
+import { ReportEntry, ShortPatientInfo } from '../../../store/patients';
 
 interface Props {
   patientId: number,

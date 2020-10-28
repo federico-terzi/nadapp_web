@@ -3,7 +3,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { TabPanel } from '@material-ui/lab';
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
-import InnerPanel from '../InnerPanel';
+import InnerPanel from '../../InnerPanel';
 import PatientBalanceTab from './PatientBalanceTab';
 import PatientDiaryTab from './PatientDiaryTab';
 import PatientDoctorTab from './PatientDoctorTab';

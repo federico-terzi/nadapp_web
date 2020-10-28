@@ -14,6 +14,8 @@ const store = configureStore({
   middleware: (getDefaultMiddleware) => getDefaultMiddleware() //.concat(logger),
 })
 
+export type RootDispatch = typeof store.dispatch
+
 store.dispatch(fetchProfileInfo())
 
 ReactDOM.render(

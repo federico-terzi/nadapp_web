@@ -2,7 +2,7 @@ import { TableCell, TableRow } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { DoctorEntry, ShortPatientInfo } from '../../store/patients';
+import { DoctorEntry, ShortPatientInfo } from '../../../store/patients';
 
 interface Props {
   doctor: DoctorEntry,

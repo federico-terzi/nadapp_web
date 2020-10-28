@@ -4,10 +4,10 @@ import { Dashboard } from '@material-ui/icons';
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
-import { fetchPatientProfile, PatientProfile } from '../../store/patients';
-import { fetchProfileInfo } from '../../store/profile';
-import { RootState } from '../../store/root';
-import FieldCell from '../common/FieldCell';
+import { fetchPatientProfile, PatientProfile } from '../../../store/patients';
+import { fetchProfileInfo } from '../../../store/profile';
+import { RootState } from '../../../store/root';
+import FieldCell from '../../common/FieldCell';
 
 const useStyles = makeStyles({
   root: {},
@@ -26,7 +26,7 @@ function PatientProfileTab({ patientId }: Props) {
 
   useEffect(() => {
     dispatch(fetchPatientProfile(patientId))
-  }, [])
+  }, [patientId])
 
   const profile = useSelector<RootState, PatientProfile | null>(state => state.patients.currentPatientProfile)
   if (!profile) {

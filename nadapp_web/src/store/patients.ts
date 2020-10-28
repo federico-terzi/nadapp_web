@@ -2,14 +2,14 @@ import { createAsyncThunk, createReducer } from "@reduxjs/toolkit"
 import axios from "axios"
 import { BASIC_LOGIN_ENDPOINT, BASIC_LOGIN_VERIFY_ENDPOINT, generatePatientBalancesEndpoint, generatePatientDoctorsEndpoint, generatePatientMealsEndpoint, generatePatientProfileEndpoint, generatePatientReportsEndpoint, PATIENTS_ENDPOINT, PROFILE_INFO_ENDPOINT } from "../serverConfig"
 import { logoutRequest } from "./auth"
-import { SessionError } from "./common"
+import { handleRequestFailure, SessionError } from "./common"
 import { redirectTo } from "./navigation"
 import { RootState } from "./root"
 
 export interface ShortPatientInfo {
   id: number,
-  firstName: number,
-  lastName: number,
+  firstName: string,
+  lastName: string,
 }
 
 export interface PatientProfile {
@@ -119,10 +119,8 @@ export const fetchPatients = createAsyncThunk(
       } as FetchPatientsListSuccess 
     } catch (err) {
       console.log("fetchPatients error:", err.response.data)
-      if (err.response.status === 401) {
-        dispatch(logoutRequest())
-      }
-      throw err
+      handleRequestFailure(dispatch, err)
+      throw err 
     }
   })
 
@@ -136,10 +134,8 @@ export const fetchPatientProfile = createAsyncThunk(
       } as FetchPatientProfileSuccess 
     } catch (err) {
       console.log("fetchPatientProfile error:", err.response.data)
-      if (err.response.status === 401) {
-        dispatch(logoutRequest())
-      }
-      throw err
+      handleRequestFailure(dispatch, err)
+      throw err 
     }
   })
 
@@ -153,10 +149,8 @@ export const fetchPatientMeals = createAsyncThunk(
       } as FetchPatientMealsSuccess 
     } catch (err) {
       console.log("fetchPatientMeals error:", err.response.data)
-      if (err.response.status === 401) {
-        dispatch(logoutRequest())
-      }
-      throw err
+      handleRequestFailure(dispatch, err)
+      throw err 
     }
   })
 
@@ -170,10 +164,8 @@ export const fetchPatientBalances = createAsyncThunk(
       } as FetchPatientBalancesSuccess 
     } catch (err) {
       console.log("fetchPatientBalances error:", err.response.data)
-      if (err.response.status === 401) {
-        dispatch(logoutRequest())
-      }
-      throw err
+      handleRequestFailure(dispatch, err)
+      throw err 
     }
   })
 
@@ -187,10 +179,8 @@ export const fetchPatientReports = createAsyncThunk(
       } as FetchPatientReportsSuccess 
     } catch (err) {
       console.log("fetchPatientReports error:", err.response.data)
-      if (err.response.status === 401) {
-        dispatch(logoutRequest())
-      }
-      throw err
+      handleRequestFailure(dispatch, err)
+      throw err 
     }
   })
 
@@ -204,10 +194,8 @@ export const fetchPatientDoctors = createAsyncThunk(
       } as FetchPatientDoctorsSuccess 
     } catch (err) {
       console.log("fetchPatientDoctors error:", err.response.data)
-      if (err.response.status === 401) {
-        dispatch(logoutRequest())
-      }
-      throw err
+      handleRequestFailure(dispatch, err)
+      throw err 
     }
   })
 

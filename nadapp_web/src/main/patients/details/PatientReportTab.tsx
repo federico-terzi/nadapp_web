@@ -4,9 +4,9 @@ import { CloudUpload } from '@material-ui/icons';
 import axios from "axios";
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { generatePatientReportUploadEndpoint } from '../../serverConfig';
-import { fetchPatientReports, ReportEntry } from '../../store/patients';
-import { RootState } from '../../store/root';
+import { generatePatientReportUploadEndpoint } from '../../../serverConfig';
+import { fetchPatientReports, ReportEntry } from '../../../store/patients';
+import { RootState } from '../../../store/root';
 import ReportItem from './ReportItem';
 
 const useStyles = makeStyles({
@@ -26,7 +26,7 @@ function PatientReportTab({ patientId }: Props) {
 
   useEffect(() => {
     dispatch(fetchPatientReports(patientId))
-  }, [])
+  }, [patientId])
 
   const reports = useSelector<RootState, ReportEntry[]>(state => state.patients.currentPatientReports)
   const reportItems = reports.map(report => <ReportItem report={report} patientId={patientId} />)

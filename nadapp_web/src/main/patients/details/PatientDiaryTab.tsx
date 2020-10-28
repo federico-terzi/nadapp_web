@@ -4,10 +4,10 @@ import { Dashboard } from '@material-ui/icons';
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
-import { fetchPatientMeals, fetchPatientProfile, MealEntry, PatientProfile } from '../../store/patients';
-import { fetchProfileInfo } from '../../store/profile';
-import { RootState } from '../../store/root';
-import FieldCell from '../common/FieldCell';
+import { fetchPatientMeals, fetchPatientProfile, MealEntry, PatientProfile } from '../../../store/patients';
+import { fetchProfileInfo } from '../../../store/profile';
+import { RootState } from '../../../store/root';
+import FieldCell from '../../common/FieldCell';
 import DiaryItem from './DiaryItem';
 
 const useStyles = makeStyles({
@@ -27,7 +27,7 @@ function PatientDiaryTab({ patientId }: Props) {
 
   useEffect(() => {
     dispatch(fetchPatientMeals(patientId))
-  }, [])
+  }, [patientId])
 
   const meals = useSelector<RootState, MealEntry[]>(state => state.patients.currentPatientMeals)
   const mealItems = meals.map(meal => <DiaryItem meal={meal} />)

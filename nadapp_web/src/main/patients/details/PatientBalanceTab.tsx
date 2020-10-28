@@ -4,10 +4,10 @@ import { Dashboard } from '@material-ui/icons';
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
-import { BalanceEntry, fetchPatientBalances, fetchPatientMeals, fetchPatientProfile, MealEntry, PatientProfile } from '../../store/patients';
-import { fetchProfileInfo } from '../../store/profile';
-import { RootState } from '../../store/root';
-import FieldCell from '../common/FieldCell';
+import { BalanceEntry, fetchPatientBalances, fetchPatientMeals, fetchPatientProfile, MealEntry, PatientProfile } from '../../../store/patients';
+import { fetchProfileInfo } from '../../../store/profile';
+import { RootState } from '../../../store/root';
+import FieldCell from '../../common/FieldCell';
 import BalanceItem from './BalanceItem';
 import DiaryItem from './DiaryItem';
 
@@ -28,7 +28,7 @@ function PatientBalanceTab({ patientId }: Props) {
 
   useEffect(() => {
     dispatch(fetchPatientBalances(patientId))
-  }, [])
+  }, [patientId])
 
   const balances = useSelector<RootState, BalanceEntry[]>(state => state.patients.currentPatientBalances)
   const balanceItems = balances.map(balance => <BalanceItem balance={balance} />)
