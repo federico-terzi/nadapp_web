@@ -1,6 +1,6 @@
 import { createAsyncThunk, createReducer } from "@reduxjs/toolkit"
 import axios from "axios"
-import { BASIC_LOGIN_ENDPOINT, BASIC_LOGIN_VERIFY_ENDPOINT } from "../serverConfig"
+import { BASIC_LOGIN_ENDPOINT, BASIC_LOGIN_VERIFY_ENDPOINT, SPID_LOGIN_ENDPOINT } from "../serverConfig"
 import { redirectTo } from "./navigation"
 import { fetchProfileInfo } from "./profile"
 import { RootState } from "./root"
@@ -91,6 +91,35 @@ export const basicLoginVerifyRequested = createAsyncThunk(
     }
   })
 
+export const requestSpidLogin = createAsyncThunk(
+  "auth/requestSpidLogin",
+  async (spidToken: string, { dispatch }) => {
+    try {
+      const response = await axios.post(SPID_LOGIN_ENDPOINT, {
+        token: spidToken 
+      })
+      if (response.data.result === "ok") {
+        dispatch(fetchProfileInfo())
+        dispatch(redirectTo({
+          path: "/",
+          replace: true,
+        }))
+
+        return true
+      } else {
+        console.log(response.data)
+        throw new LoginError("Il server ha restituito una risposta non valida")
+      }
+    } catch (err) {
+      console.log("spidLoginError error:", err.response?.data)
+      const errorMessage = err.response?.data?.error ?? ""
+      if (errorMessage === "invalid token") {
+        throw new LoginError("Accesso non consentito, token non valido")
+      }
+      throw err
+    }
+  })
+
 export const logoutRequest = createAsyncThunk(
   "auth/logoutRequest",
   async (_, { getState, dispatch }) => {
@@ -129,6 +158,23 @@ export default createReducer(initialState, (builder) => {
     })
     .addCase(basicLoginVerifyRequested.rejected, (state, action) => {
       console.log("basic login phase two error", action.error)
+
+      state.basicLoginVerificationToken = null
+      if (action.error.message) {
+        state.error = action.error.message
+      } else {
+        state.error = "Impossibile completare la richiesta"
+      }
+    })
+    .addCase(requestSpidLogin.pending, (state, action) => {
+      console.log("spid login requested")
+    })
+    .addCase(requestSpidLogin.fulfilled, (state, action) => {
+      state.error = null
+      console.log("spid login completed")
+    })
+    .addCase(requestSpidLogin.rejected, (state, action) => {
+      console.log("spid login error", action.error)
 
       state.basicLoginVerificationToken = null
       if (action.error.message) {

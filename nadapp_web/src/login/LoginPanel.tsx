@@ -3,7 +3,8 @@ import Paper from '@material-ui/core/Paper/Paper';
 import { makeStyles } from '@material-ui/core/styles';
 import { Alert } from '@material-ui/lab';
 import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { requestSpidLogin } from '../store/auth';
 import { RootState } from '../store/root';
 import BasicLoginPanel from './basic/BasicLoginPanel';
 
@@ -27,13 +28,25 @@ const useStyles = makeStyles({
   }
 })
 
-type Section = "select_method" | "basic_login" | "spid_login"
+type Section = "select_method" | "basic_login"
 
 function LoginPanel() {
   const classes = useStyles()
+  const dispatch = useDispatch()
 
   const [section, setSection] = useState<Section>("select_method")
   const loginError = useSelector<RootState, string | null>(state => state.auth.error)
+
+  // Check whether a SPID token is present in the URL
+  if (window.location.href.includes("/login?spidToken")) {
+    const urlParams = new URLSearchParams(window.location.search)
+    const spidToken = urlParams.get('spidToken')
+    if (spidToken) {
+      dispatch(requestSpidLogin(spidToken))
+    } else {
+      console.log("Token non valido")
+    }
+  }
 
   return (
     <div className={classes.root}>
@@ -55,7 +68,7 @@ function LoginPanel() {
             </Button>
             <Button className={classes.button} variant="contained" color="primary"
               onClick={() => {
-                setSection("spid_login")
+                window.location.href = "http://nadappserver:8000/spid/login?entityID=xx_testenv2"
               }}
             >
               Accesso con SPID
@@ -65,15 +78,6 @@ function LoginPanel() {
         {section === "basic_login" &&
           <Box>
             <BasicLoginPanel />
-
-            <Link href="#" onClick={() => {
-              setSection("select_method")
-            }}>Torna ai metodi d'accesso</Link>
-          </Box>
-        }
-        {section === "spid_login" &&
-          <Box>
-            <p>Seleziona l'IDP per l'accesso SPID:</p>
 
             <Link href="#" onClick={() => {
               setSection("select_method")

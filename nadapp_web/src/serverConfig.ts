@@ -1,5 +1,6 @@
 export const BASIC_LOGIN_ENDPOINT = "/auth/basic/login"
 export const BASIC_LOGIN_VERIFY_ENDPOINT = "/auth/basic/verify"
+export const SPID_LOGIN_ENDPOINT = "/spid/convertToken"
 export const PROFILE_INFO_ENDPOINT = "/api/med/info"
 export const PATIENTS_ENDPOINT = "/api/med/patients"
 export const SEARCH_ENDPOINT = "/api/med/search"
